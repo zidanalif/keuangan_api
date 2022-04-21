@@ -22,7 +22,8 @@ Route::post('login', [AuthController::class, 'login']);
 // });
 Route::middleware('auth:api')->group(function(){
     Route::get('get-user', [AuthController::class,'userInfo']);
-    Route::put('update-user', [AuthController::class,'editUser']);
+    Route::post('update-user', [AuthController::class,'editUser']);
+    Route::post('keuangans/update/{id}', [KeuanganController::class,'update']);
     Route::resource('keuangans', KeuanganController::class);
 });
 

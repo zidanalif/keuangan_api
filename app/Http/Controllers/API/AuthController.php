@@ -27,7 +27,7 @@ class AuthController extends Controller
         ]);
 
         $token = $user->createToken('Token')->accessToken;
-        return response()->json(['message'=>'berhasil','token'=>$token, 'user'=>$user]);
+        return response()->json(['status'=>true,'token'=>$token, 'user'=>$user]);
     }
 
     public function login(Request $request)
@@ -48,7 +48,7 @@ class AuthController extends Controller
     public function userInfo()
     {
         $user = auth()->user();
-        return response()->json(['status'=>true,'user'=>$user, 'message'=>'data ditemukan']);
+        return response()->json(['status'=>true,'data'=>$user, 'message'=>'data ditemukan']);
     }
 
     public function editUser(Request $request)
@@ -62,12 +62,11 @@ class AuthController extends Controller
             return response()->json(['status'=>false,'error'=>$validator->errors()]);
         }
         $user = auth()->user();
-        $user->name=$request->name;
-        $user->email=$request->email;
-        $user->password= Hash::make($request->password);
-        if ($user->save()) {
-            return response()->json(['Data telah diupdate.', $user]);
-        }
-
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+        ]);
+        return response()->json(['status'=>true, 'data'=>$user, 'message'=>'Data telah diupdate.']);
     }
 }

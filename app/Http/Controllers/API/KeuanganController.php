@@ -20,9 +20,9 @@ class KeuanganController extends Controller
     {
         $data = Keuangan::get()->sortByDesc('id');
         if (count($data)==0) {
-            return response()->json(['Belum ada data']);
+            return response()->json(['status'=>false,'message'=>'Belum ada data']);
         }
-        return response()->json([$data, 'berhasil.']);
+        return response()->json(['status'=>true, 'data'=>$data, 'message'=>'berhasil']);
     }
 
     /**
@@ -51,7 +51,7 @@ class KeuanganController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json($validator->errors());
+            return response()->json(['status'=>false, $validator->errors()]);
         }
         $user = auth()->user();
         $id_user = $user->id;
@@ -62,7 +62,7 @@ class KeuanganController extends Controller
             'id_user' => $id_user
          ]);
 
-        return response()->json(['Berhasil menambah data.', $data]);
+        return response()->json(['status'=>true,  'data'=>$data, 'message'=>'Berhasil menambah data.']);
     }
 
     /**
@@ -99,24 +99,25 @@ class KeuanganController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function update(Request $request, Keuangan $keuangan)
+    public function update(Request $request, $id)
     {
-        // $validator = Validator::make($request->all(),[
-        //     'categorie' => 'string',
-        //     'description' => 'string',
-        //     'total' => 'integer'
-        // ]);
+        $validator = Validator::make($request->all(),[
+            'categorie' => 'required|string|max:255',
+            'description' => 'required',
+            'total' => 'required|integer'
+        ]);
 
-        // if($validator->fails()){
-        //     return response()->json($validator->errors());
-        // }
-        $valid=dd($request->all());
-        // $keuangan->update([
-        //     'categorie' => $request['categorie'],
-        //     'description' => $request['description'],
-        //     'total' => $request['total'],
-        // ]);
-        return response()->json($valid);
+        if($validator->fails()){
+            return response()->json(['status'=>false,'error'=>$validator->errors()]);
+        }
+
+        $keuangan = Keuangan::find($id);
+        $keuangan->update([
+            'categorie' => $request->categorie,
+            'description' => $request->description,
+            'total' => $request->total,
+        ]);
+        return response()->json(['status'=>true,'data'=>$keuangan, 'message' =>'Data telah di update ']);
     }
 
     /**
