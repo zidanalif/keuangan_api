@@ -53,12 +53,13 @@ class KeuanganController extends Controller
         if($validator->fails()){
             return response()->json($validator->errors());
         }
-
+        $user = auth()->user();
+        $id_user = $user->id;
         $data = Keuangan::create([
             'categorie' => $request->categorie,
             'description' => $request->description,
             'total' => $request->total,
-            'id_user' => User::get('id')
+            'id_user' => $id_user
          ]);
 
         return response()->json(['Berhasil menambah data.', $data]);
@@ -97,27 +98,25 @@ class KeuanganController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
     public function update(Request $request, Keuangan $keuangan)
     {
-        $validator = Validator::make($request->all(),[
-            'categorie' => 'required|string|max:255',
-            'description' => 'required',
-            'total' => 'required|integer'
-        ]);
+        // $validator = Validator::make($request->all(),[
+        //     'categorie' => 'string',
+        //     'description' => 'string',
+        //     'total' => 'integer'
+        // ]);
 
-        if($validator->fails()){
-            return response()->json($validator->errors());
-        }
-
-        $keuangan->categorie = $request->categorie;
-        $keuangan->description = $request->description;
-        $keuangan->total = $request->total;
-
-        if ($keuangan->save()) {
-            return response()->json(['Data telah diupdate.', $keuangan]);
-        }
-
-
+        // if($validator->fails()){
+        //     return response()->json($validator->errors());
+        // }
+        $valid=dd($request->all());
+        // $keuangan->update([
+        //     'categorie' => $request['categorie'],
+        //     'description' => $request['description'],
+        //     'total' => $request['total'],
+        // ]);
+        return response()->json($valid);
     }
 
     /**

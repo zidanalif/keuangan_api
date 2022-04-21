@@ -50,4 +50,24 @@ class AuthController extends Controller
         $user = auth()->user();
         return response()->json(['status'=>true,'user'=>$user, 'message'=>'data ditemukan']);
     }
+
+    public function editUser(Request $request)
+    {
+        $validator = Validator::make($request->all(),[
+            'name' => 'required|min:4',
+            'email' => 'required|email',
+            'password' => 'required|min:8'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['status'=>false,'error'=>$validator->errors()]);
+        }
+        $user = auth()->user();
+        $user->name=$request->name;
+        $user->email=$request->email;
+        $user->password= Hash::make($request->password);
+        if ($user->save()) {
+            return response()->json(['Data telah diupdate.', $user]);
+        }
+
+    }
 }
