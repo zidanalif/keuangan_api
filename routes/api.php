@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\KeuanganController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -20,7 +22,7 @@ Route::post('login', [AuthController::class, 'login']);
 // });
 Route::middleware('auth:api')->group(function(){
     Route::get('get-user', [AuthController::class,'userInfo']);
-    Route::resource('keuangans', App\Http\Controllers\API\KeuanganController::class);
+    Route::resource('keuangans', KeuanganController::class);
 });
 
 

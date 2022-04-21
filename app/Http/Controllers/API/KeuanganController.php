@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Keuangan;
 use app\Http\Resources\KeuanganResource;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 
 class KeuanganController extends Controller
@@ -17,8 +18,11 @@ class KeuanganController extends Controller
      */
     public function index()
     {
-        $data = Keuangan::latest()->get();
-        return response()->json([KeuanganResource::collection($data), 'berhasil.']);
+        $data = Keuangan::get()->sortByDesc('id');
+        if (count($data)==0) {
+            return response()->json(['Belum ada data']);
+        }
+        return response()->json([$data, 'berhasil.']);
     }
 
     /**
@@ -39,6 +43,7 @@ class KeuanganController extends Controller
      */
     public function store(Request $request)
     {
+
         $validator = Validator::make($request->all(),[
             'categorie' => 'required|string|max:255',
             'description' => 'required',
@@ -52,10 +57,11 @@ class KeuanganController extends Controller
         $data = Keuangan::create([
             'categorie' => $request->categorie,
             'description' => $request->description,
-            'total' => $request->total
+            'total' => $request->total,
+            'id_user' => User::get('id')
          ]);
 
-        return response()->json(['Berhasil menambah data.', new KeuanganResource($data)]);
+        return response()->json(['Berhasil menambah data.', $data]);
     }
 
     /**
@@ -70,7 +76,7 @@ class KeuanganController extends Controller
         if (is_null($data)) {
             return response()->json('Data tidak ditemukan', 404);
         }
-        return response()->json([new KeuanganResource($data)]);
+        return response()->json([$data]);
     }
 
     /**
@@ -106,9 +112,12 @@ class KeuanganController extends Controller
         $keuangan->categorie = $request->categorie;
         $keuangan->description = $request->description;
         $keuangan->total = $request->total;
-        $keuangan->save();
 
-        return response()->json(['Data telah diupdate.', new KeuanganResource($keuangan)]);
+        if ($keuangan->save()) {
+            return response()->json(['Data telah diupdate.', $keuangan]);
+        }
+
+
     }
 
     /**

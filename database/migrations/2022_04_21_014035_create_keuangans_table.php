@@ -18,7 +18,7 @@ class CreateKeuangansTable extends Migration
             $table->string('categorie');
             $table->string('description');
             $table->integer('total');
-            //$table->id('id_user');
+            $table->integer('id_user');
             $table->timestamps();
         });
     }
